@@ -3,53 +3,40 @@
 #include <algorithm>
 #include <cctype>
 
-// pasar una cadena a minusculas
+// pasa un string a minusculas
 void toLower(std::string &texto) {
-
-    std::transform(texto.begin(),
-                   texto.end(),
-                   texto.begin(),
+    std::transform(texto.begin(), texto.end(), texto.begin(),
                    [](unsigned char c) {
                        return std::tolower(c);
                    });
 }
 
-
-// buscar una particion montada
-montada* buscarMontada(std::vector<disco> &discos,
-                       const std::string &id) {
-
+// buscar un disco comparando por su ruta
+disco* buscarDisco(std::vector<disco> &discos, const std::string &path) {
     for (auto &d : discos) {
-
-        for (auto &p : d.particiones) {
-
-            if (p.id == id) {
-                return &p;
-            }
-
+        if (d.path == path) {
+            return &d;
         }
-
     }
-
     return nullptr;
 }
 
-
-// devolver el disco al que pertenece una particion
-disco* buscarDisco(std::vector<disco> &discos,
-                   const std::string &id) {
-
-    for (auto &d : discos) {
-
-        for (auto &p : d.particiones) {
-
-            if (p.id == id) {
-                return &d;
-            }
-
+// buscar un montaje por su id
+montaje* buscarMontaje(std::vector<montaje> &montajes, const std::string &id) {
+    for (auto &m : montajes) {
+        if (m.id == id) {
+            return &m;
         }
-
     }
+    return nullptr;
+}
 
+// buscar un usuario por su nombre
+usuario* buscarUsuario(std::vector<usuario> &usuarios, const std::string &nombre) {
+    for (auto &u : usuarios) {
+        if (u.nombre == nombre) {
+            return &u;
+        }
+    }
     return nullptr;
 }
