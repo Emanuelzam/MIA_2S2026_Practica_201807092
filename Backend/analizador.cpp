@@ -2,21 +2,17 @@
 
 #include <iostream>
 
+#include "mkdisk.h"
+#include "rmdisk.h"
 #include "utils.h"
 
 // aqui se guarda todo lo que se va "creando" durante la sesion
 estadoSistema estado;
 
-// ------------------------------------------------------------------
-// ANALISIS LEXICO
-// ------------------------------------------------------------------
+//Analisis lexico
 
-// separa la linea por espacios pero respetando las comillas.
-// por ejemplo:
-//   mkdisk -size=5 -path="/home/mis discos/Disco1.mia"
-// queda en tokens:
-//   ["mkdisk", "-size=5", "-path=/home/mis discos/Disco1.mia"]
-// tambien quita los comentarios que empiecen con '#'
+//separa la linea por espacios pero
+//tambien quita los comentarios que empiecen con #
 static void tokenizar(const std::string &linea, std::vector<std::string> &tokens) {
     std::string token;
     bool adentro_comillas = false;
@@ -29,8 +25,8 @@ static void tokenizar(const std::string &linea, std::vector<std::string> &tokens
             break;
         }
 
-        // las comillas no se guardan, solo sirven para poder usar
-        // espacios dentro de un parametro (rutas principalmente)
+        //las comillas no se guardan, solo sirven para poder usar
+        //espacios dentro de un parametro
         if (c == '"') {
             adentro_comillas = !adentro_comillas;
             continue;
@@ -51,9 +47,8 @@ static void tokenizar(const std::string &linea, std::vector<std::string> &tokens
     }
 }
 
-// ------------------------------------------------------------------
-// ANALISIS SINTACTICO
-// ------------------------------------------------------------------
+
+//Analisis sintactico
 
 // revisa que la linea tenga la forma "comando -param=valor ..."
 bool analizarLinea(const std::string &linea, std::string &comando,
@@ -113,12 +108,9 @@ bool analizarLinea(const std::string &linea, std::string &comando,
     return true;
 }
 
-// ------------------------------------------------------------------
-// DESPACHO DE COMANDOS
-// ------------------------------------------------------------------
+//Comandos
 
-// por ahora solo muestra lo que se detecto, los analizadores de cada
-// comando los voy agregando de a uno en las siguientes partes
+
 static void mostrarDetectado(const std::string &comando, std::vector<parametro> &params) {
     std::cout << ">> comando detectado: " << comando << std::endl;
     if (params.empty()) {
@@ -147,12 +139,14 @@ void ejecutarComando(const std::string &linea) {
     }
 
     // dependiendo del comando se manda a su analizador especifico
-    if (comando == "mkdisk" || comando == "rmdisk" ||
-        comando == "fdisk" || comando == "mount" ||
-        comando == "mkfs"  || comando == "mkusr" ||
-        comando == "rmusr" || comando == "mkfile") {
-        // TODO: aqui en la parte correspondiente se manda a la funcion
-        // de cada comando (ej: analizarMkdisk(params))
+    if (comando == "mkdisk") {
+        analizarMkdisk(params);
+    } else if (comando == "rmdisk") {
+        analizarRmdisk(params);
+    } else if (comando == "fdisk" || comando == "mount" ||
+               comando == "mkfs"  || comando == "mkusr" ||
+               comando == "rmusr" || comando == "mkfile") {
+        // los analizadores que faltan se van agregando de a uno
         mostrarDetectado(comando, params);
     } else {
         std::cout << "[ERROR] el comando '" << comando
