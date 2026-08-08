@@ -6,7 +6,8 @@
 #include "analizador.h"
 
 
-const std::string CARNET = "201807092";
+//carnet global
+std::string CARNET = "201807092";
 
 int main() {
     std::cout << "******************************************" << std::endl;

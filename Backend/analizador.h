@@ -6,6 +6,9 @@
 
 #include "structs.h"
 
+// carnet del estudiante, lo define main.cpp
+extern std::string CARNET;
+
 //separa la linea en el comando y sus parametros
 //si hay un problema de sintaxis deja el mensaje en error
 bool analizarLinea(const std::string &linea, std::string &comando,

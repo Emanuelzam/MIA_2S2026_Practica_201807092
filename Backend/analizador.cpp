@@ -4,6 +4,7 @@
 
 #include "fdisk.h"
 #include "mkdisk.h"
+#include "mount.h"
 #include "rmdisk.h"
 #include "utils.h"
 
@@ -146,8 +147,9 @@ void ejecutarComando(const std::string &linea) {
         analizarRmdisk(params);
     } else if (comando == "fdisk") {
         analizarFdisk(params);
-    } else if (comando == "mount" ||
-               comando == "mkfs"  || comando == "mkusr" ||
+    } else if (comando == "mount") {
+        analizarMount(params);
+    } else if (comando == "mkfs"  || comando == "mkusr" ||
                comando == "rmusr" || comando == "mkfile") {
         // los analizadores que faltan se van agregando de a uno
         mostrarDetectado(comando, params);
