@@ -2,11 +2,10 @@
 #define MKFS_H
 
 #include <vector>
-#include <string>
 
 #include "structs.h"
 
-void mkfs(std::vector<std::string> &parametros,
-          std::vector<disco> &discos);
+// analiza el comando mkfs -id=.. -type=..
+void analizarMkfs(std::vector<parametro> &params);
 
 #endif

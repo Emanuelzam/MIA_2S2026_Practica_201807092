@@ -33,11 +33,12 @@ struct disco {
 
 // particion que ya se monto con el comando mount
 struct montaje {
-    std::string id; // ej "341A"
+    std::string id; // ej "921A"
     std::string path; // a que disco pertenece
     std::string nombre; // nombre de la particion
     int numParticion; // en que posicion del disco esta
     char tipo; // tipo de particion
+    bool formateada = false; // si ya se le hizo mkfs
 };
 
 //usuario que se va agregando con mkusr
