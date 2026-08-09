@@ -5,8 +5,10 @@
 #include "fdisk.h"
 #include "mkdisk.h"
 #include "mkfs.h"
+#include "mkusr.h"
 #include "mount.h"
 #include "rmdisk.h"
+#include "rmusr.h"
 #include "utils.h"
 
 // aqui se guarda todo lo que se va "creando" durante la sesion
@@ -152,9 +154,12 @@ void ejecutarComando(const std::string &linea) {
         analizarMount(params);
     } else if (comando == "mkfs") {
         analizarMkfs(params);
-    } else if (comando == "mkusr" || comando == "rmusr" ||
-               comando == "mkfile") {
-        // los analizadores que faltan se van agregando de a uno
+    } else if (comando == "mkusr") {
+        analizarMkusr(params);
+    } else if (comando == "rmusr") {
+        analizarRmusr(params);
+    } else if (comando == "mkfile") {
+        // se agrega en la siguiente parte
         mostrarDetectado(comando, params);
     } else {
         std::cout << "[ERROR] el comando '" << comando
