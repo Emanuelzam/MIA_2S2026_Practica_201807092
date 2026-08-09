@@ -4,6 +4,7 @@
 
 #include "fdisk.h"
 #include "mkdisk.h"
+#include "mkfile.h"
 #include "mkfs.h"
 #include "mkusr.h"
 #include "mount.h"
@@ -116,22 +117,6 @@ bool analizarLinea(const std::string &linea, std::string &comando,
 //Comandos
 
 
-static void mostrarDetectado(const std::string &comando, std::vector<parametro> &params) {
-    std::cout << ">> comando detectado: " << comando << std::endl;
-    if (params.empty()) {
-        std::cout << ">> sin parametros" << std::endl;
-        return;
-    }
-    for (auto &p : params) {
-        if (p.valor.empty()) {
-            std::cout << "   - " << p.nombre << " (flag)" << std::endl;
-        } else {
-            std::cout << "   - " << p.nombre << " = " << p.valor << std::endl;
-        }
-    }
-    std::cout << ">> [PENDIENTE] el analizador de este comando se agrega luego" << std::endl;
-}
-
 void ejecutarComando(const std::string &linea) {
     std::string comando;
     std::vector<parametro> params;
@@ -159,8 +144,7 @@ void ejecutarComando(const std::string &linea) {
     } else if (comando == "rmusr") {
         analizarRmusr(params);
     } else if (comando == "mkfile") {
-        // se agrega en la siguiente parte
-        mostrarDetectado(comando, params);
+        analizarMkfile(params);
     } else {
         std::cout << "[ERROR] el comando '" << comando
                   << "' no existe o no se reconoce" << std::endl;
