@@ -12,8 +12,12 @@
 #include "rmusr.h"
 #include "utils.h"
 
-// aqui se guarda todo lo que se va "creando" durante la sesion
+//aqui se guarda todo lo que se va creando durante la sesion
 estadoSistema estado;
+
+//carnet de aqui se sacan los ultimos 2 digitos
+//para armar el id del comando mount
+std::string CARNET = "201807092";
 
 //Analisis lexico
 
@@ -146,7 +150,7 @@ void ejecutarComando(const std::string &linea) {
     } else if (comando == "mkfile") {
         analizarMkfile(params);
     } else {
-        std::cout << "[ERROR] el comando '" << comando
+        std::cout << "Error el comando '" << comando
                   << "' no existe o no se reconoce" << std::endl;
     }
 }

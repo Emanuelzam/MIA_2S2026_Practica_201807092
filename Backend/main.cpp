@@ -6,9 +6,6 @@
 #include "analizador.h"
 
 
-//carnet global
-std::string CARNET = "201807092";
-
 int main() {
     std::cout << "******************************************" << std::endl;
     std::cout << " ANALIZADOR DE COMANDOS EXT2 (Practica 1) " << std::endl;
