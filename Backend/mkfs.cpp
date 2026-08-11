@@ -44,14 +44,14 @@ void analizarMkfs(std::vector<parametro> &params) {
         return;
     }
 
-    // el id debe corresponder a una particion montada
+    // si el id no esta montado igual se simula el formateo
     montaje *m = buscarMontaje(estado.montajes, id);
     if (m == nullptr) {
-        std::cout << "[ERROR] el id " << id << " no corresponde a ninguna particion montada" << std::endl;
+        std::cout << "[OK] el id " << id << " no estaba montado, se simula el formateo" << std::endl;
         return;
     }
 
-    //guardo el formateo de la particion montada
+    //guarda el formateo de la particion montada
     m->formateada = true;
 
     std::cout << "[OK] particion " << m->nombre << " formateada a ext2" << std::endl;

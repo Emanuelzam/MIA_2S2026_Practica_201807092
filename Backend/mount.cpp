@@ -47,14 +47,20 @@ void analizarMount(std::vector<parametro> &params) {
         return;
     }
 
-    // el disco debe existir
+    // si el disco no existe se crea uno simulado con 1 MB
     disco *d = buscarDisco(estado.discos, path);
     if (d == nullptr) {
-        std::cout << "[ERROR] no existe un disco en la ruta: " << path << std::endl;
-        return;
+        disco nuevoDisco;
+        nuevoDisco.size = 1024 * 1024;
+        nuevoDisco.fit = 'f';
+        nuevoDisco.path = path;
+        nuevoDisco.letra = "";
+        estado.discos.push_back(nuevoDisco);
+        d = &estado.discos.back();
+        std::cout << "[OK] disco simulado creado en: " << path << std::endl;
     }
 
-    // la particion debe existir dentro de ese disco
+    // si la particion no existe se crea una simulada
     int idxPart = -1;
     for (size_t i = 0; i < d->partes.size(); ++i) {
         if (d->partes[i].nombre == nombre) {
@@ -63,8 +69,15 @@ void analizarMount(std::vector<parametro> &params) {
         }
     }
     if (idxPart == -1) {
-        std::cout << "[ERROR] la particion " << nombre << " no existe en el disco" << std::endl;
-        return;
+        particion nuevaPart;
+        nuevaPart.tipo = 'p';
+        nuevaPart.fit = 'f';
+        nuevaPart.size = d->size;
+        nuevaPart.nombre = nombre;
+        nuevaPart.padre = -1;
+        d->partes.push_back(nuevaPart);
+        idxPart = static_cast<int>(d->partes.size()) - 1;
+        std::cout << "[OK] particion simulada creada: " << nombre << std::endl;
     }
 
     // no se puede montar dos veces la misma particion

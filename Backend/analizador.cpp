@@ -23,7 +23,9 @@ std::string CARNET = "201807092";
 
 //separa la linea por espacios pero
 //tambien quita los comentarios que empiecen con #
-static void tokenizar(const std::string &linea, std::vector<std::string> &tokens) {
+//al final marca si quedaron comillas sin cerrar
+static void tokenizar(const std::string &linea, std::vector<std::string> &tokens,
+                      bool &comillas_sin_cerrar) {
     std::string token;
     bool adentro_comillas = false;
 
@@ -55,6 +57,8 @@ static void tokenizar(const std::string &linea, std::vector<std::string> &tokens
     if (!token.empty()) {
         tokens.push_back(token);
     }
+
+    comillas_sin_cerrar = adentro_comillas;
 }
 
 
@@ -64,7 +68,14 @@ static void tokenizar(const std::string &linea, std::vector<std::string> &tokens
 bool analizarLinea(const std::string &linea, std::string &comando,
                    std::vector<parametro> &params, std::string &error) {
     std::vector<std::string> tokens;
-    tokenizar(linea, tokens);
+    bool comillas_sin_cerrar = false;
+    tokenizar(linea, tokens, comillas_sin_cerrar);
+
+    // las comillas que no se cierran son un error lexico
+    if (comillas_sin_cerrar) {
+        error = "comillas sin cerrar";
+        return false;
+    }
 
     if (tokens.empty()) {
         error = "linea vacia o solo un comentario";
@@ -122,6 +133,13 @@ bool analizarLinea(const std::string &linea, std::string &comando,
 
 
 void ejecutarComando(const std::string &linea) {
+    // las lineas vacias o que solo son comentarios se ignoran,
+    // no cuentan como un error
+    size_t ini = linea.find_first_not_of(" \t");
+    if (ini == std::string::npos || linea[ini] == '#') {
+        return;
+    }
+
     std::string comando;
     std::vector<parametro> params;
     std::string error;
@@ -150,7 +168,7 @@ void ejecutarComando(const std::string &linea) {
     } else if (comando == "mkfile") {
         analizarMkfile(params);
     } else {
-        std::cout << "Error el comando '" << comando
+        std::cout << "[ERROR] el comando '" << comando
                   << "' no existe o no se reconoce" << std::endl;
     }
 }

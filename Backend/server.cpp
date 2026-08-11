@@ -42,7 +42,10 @@ static std::string escaparJson(const std::string &texto) {
 }
 
 //el frontend manda el cuerpo de la peticion como json:
-//{"comando":"mkdisk -size=5 -path=/tmp/Disco1.mia"}
+//{"comando":"mkdisk -size=5 -path=\"/tmp/Disco1.mia\""}
+//aqui el valor trae las comillas escapadas (\") si el comando
+//lleva rutas con espacios, asi que hay que leer hasta la comilla
+//que no tenga una barra atras
 static std::string extraerComando(const std::string &body) {
     std::string clave = "\"comando\"";
     size_t pos = body.find(clave);
@@ -57,11 +60,33 @@ static std::string extraerComando(const std::string &body) {
     if (ini == std::string::npos) {
         return "";
     }
-    size_t fin = body.find('"', ini + 1);
-    if (fin == std::string::npos) {
-        return "";
+
+    std::string valor;
+    bool escapado = false;
+    for (size_t i = ini + 1; i < body.size(); ++i) {
+        char c = body[i];
+        if (escapado) {
+            // convierto las secuencias mas comunes y dejo las
+            // comillas escapadas como comilla normal
+            if (c == 'n') {
+                valor += '\n';
+            } else if (c == 't') {
+                valor += '\t';
+            } else if (c == 'r') {
+                valor += '\r';
+            } else {
+                valor += c;
+            }
+            escapado = false;
+        } else if (c == '\\') {
+            escapado = true;
+        } else if (c == '"') {
+            break; // es el cierre del string json
+        } else {
+            valor += c;
+        }
     }
-    return body.substr(ini + 1, fin - ini - 1);
+    return valor;
 }
 
 //arma el json con todo el estado que se lleva en memoria
@@ -166,6 +191,15 @@ int main() {
     //devuelve lo que se tiene en memoria (discos, montajes, usuarios)
     svr.Get("/estado", [](const httplib::Request &, httplib::Response &res) {
         res.set_content(estadoAJson(), "application/json");
+    });
+
+    //limpia todo el estado para correr un archivo de pruebas desde cero
+    //sin tener que reiniciar el servidor
+    svr.Post("/reset", [](const httplib::Request &, httplib::Response &res) {
+        estado.discos.clear();
+        estado.montajes.clear();
+        estado.usuarios.clear();
+        res.set_content("{\"ok\":true,\"salida\":\"[OK] estado reiniciado\"}", "application/json");
     });
 
     std::cout << "Servidor corriendo en http://localhost:8080" << std::endl;

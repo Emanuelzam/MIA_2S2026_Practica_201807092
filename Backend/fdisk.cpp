@@ -16,8 +16,8 @@ static int contarPrimariasExtendidas(disco &d) {
 }
 
 //suma el espacio que ocupan primarias y extendidas
-static int sumarPrimariasExtendidas(disco &d) {
-    int total = 0;
+static long long sumarPrimariasExtendidas(disco &d) {
+    long long total = 0;
     for (auto &p : d.partes) {
         if (p.tipo != 'l') {
             total += p.size;
@@ -37,8 +37,8 @@ static int indiceExtendida(disco &d) {
 }
 
 //suma el espacio que ya ocupan las logicas de una extendida
-static int sumarLogicas(disco &d, int idxExtendida) {
-    int total = 0;
+static long long sumarLogicas(disco &d, int idxExtendida) {
+    long long total = 0;
     for (auto &p : d.partes) {
         if (p.padre == idxExtendida) {
             total += p.size;
@@ -72,18 +72,18 @@ void analizarFdisk(std::vector<parametro> &params) {
     }
     int size = 0;
     if (!stringAEntero(valorParametro(params, "size"), size) || size <= 0) {
-        std::cout << "Error -size debe ser un numero entero mayor que 0" << std::endl;
+        std::cout << "[ERROR] -size debe ser un numero entero mayor que 0" << std::endl;
         return;
     }
 
     // -path es obligatorio
     if (contarParametro(params, "path") == 0) {
-        std::cout << "Error falta el parametro obligatorio -path" << std::endl;
+        std::cout << "[ERROR] falta el parametro obligatorio -path" << std::endl;
         return;
     }
     std::string path = valorParametro(params, "path");
     if (path.empty()) {
-        std::cout << "Error -path no puede ir vacio" << std::endl;
+        std::cout << "[ERROR] -path no puede ir vacio" << std::endl;
         return;
     }
 
@@ -94,15 +94,7 @@ void analizarFdisk(std::vector<parametro> &params) {
     }
     std::string nombre = valorParametro(params, "name");
     if (nombre.empty()) {
-        std::cout << "Error -name no puede ir vacio" << std::endl;
-        return;
-    }
-
-    // el disco tiene que existir en memoria
-    disco *d = buscarDisco(estado.discos, path);
-    if (d == nullptr) {
-        std::cout << "Error no existe un disco en la ruta: " << path
-                  << "use mkdisk primero" << std::endl;
+        std::cout << "[ERROR] -name no puede ir vacio" << std::endl;
         return;
     }
 
@@ -113,7 +105,7 @@ void analizarFdisk(std::vector<parametro> &params) {
         tipo = "p";
     }
     if (tipo != "p" && tipo != "e" && tipo != "l") {
-        std::cout << "Error -type solo acepta P, E o L" << std::endl;
+        std::cout << "[ERROR] -type solo acepta P, E o L" << std::endl;
         return;
     }
 
@@ -124,7 +116,7 @@ void analizarFdisk(std::vector<parametro> &params) {
         unit = "k";
     }
     if (unit != "b" && unit != "k" && unit != "m") {
-        std::cout << "Error -unit solo acepta B, K o M" << std::endl;
+        std::cout << "[ERROR] -unit solo acepta B, K o M" << std::endl;
         return;
     }
 
@@ -139,15 +131,29 @@ void analizarFdisk(std::vector<parametro> &params) {
         return;
     }
 
-    //pasa el tamano a bytes
-    int sizeBytes = size;
+    //pasa el tamano a bytes, long long para que no se desborde
+    long long sizeBytes = size;
     if (unit == "k") {
-        sizeBytes = size * 1024;
+        sizeBytes = size * 1024LL;
     } else if (unit == "m") {
-        sizeBytes = size * 1024 * 1024;
+        sizeBytes = size * 1024LL * 1024LL;
     }
 
-    //el nombre no puede estar ya usado en ese disco
+    // si el disco no existe se crea uno simulado del tamano
+    // de la particion para agilizar las pruebas
+    disco *d = buscarDisco(estado.discos, path);
+    if (d == nullptr) {
+        disco nuevoDisco;
+        nuevoDisco.size = sizeBytes;
+        nuevoDisco.fit = fit[0];
+        nuevoDisco.path = path;
+        nuevoDisco.letra = "";
+        estado.discos.push_back(nuevoDisco);
+        d = &estado.discos.back();
+        std::cout << "[OK] disco simulado creado en: " << path << std::endl;
+    }
+
+    // el nombre no puede estar ya usado en ese disco
     for (auto &p : d->partes) {
         if (p.nombre == nombre) {
             std::cout << "[ERROR] ya existe una particion llamada " << nombre
@@ -156,21 +162,21 @@ void analizarFdisk(std::vector<parametro> &params) {
         }
     }
 
-    // alidaciones segun el tipo de particion
+    // validaciones segun el tipo de particion
     if (tipo == "p") {
         // a lo mucho 4 entre primarias y extendidas
         if (contarPrimariasExtendidas(*d) >= 4) {
-            std::cout << "Error ya no caben mas particiones primarias en el disco" << std::endl;
+            std::cout << "[ERROR] ya no caben mas particiones primarias en el disco" << std::endl;
             return;
         }
         //revisar espacio libre
         if (sizeBytes > d->size - sumarPrimariasExtendidas(*d)) {
-            std::cout << "Error no hay espacio suficiente en el disco" << std::endl;
+            std::cout << "[ERROR] no hay espacio suficiente en el disco" << std::endl;
             return;
         }
     } else if (tipo == "e") {
         if (contarPrimariasExtendidas(*d) >= 4) {
-            std::cout << "Error ya no caben mas particiones en el disco" << std::endl;
+            std::cout << "[ERROR] ya no caben mas particiones en el disco" << std::endl;
             return;
         }
         // solo puede haber una extendida
@@ -186,12 +192,12 @@ void analizarFdisk(std::vector<parametro> &params) {
         // para crear logicas hace falta una extendida primero
         int idxExt = indiceExtendida(*d);
         if (idxExt == -1) {
-            std::cout << "Error no hay una particion extendida, crea una primero" << std::endl;
+            std::cout << "[ERROR] no hay una particion extendida, crea una primero" << std::endl;
             return;
         }
         // las logicas van dentro del espacio de la extendida
         if (sizeBytes > d->partes[idxExt].size - sumarLogicas(*d, idxExt)) {
-            std::cout << "Error no hay espacio en la particion extendida" << std::endl;
+            std::cout << "[ERROR] no hay espacio en la particion extendida" << std::endl;
             return;
         }
     }

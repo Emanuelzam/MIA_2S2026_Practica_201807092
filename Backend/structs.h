@@ -16,7 +16,7 @@ struct parametro {
 struct particion {
     char tipo; //P primaria E extendida L logica
     char fit; //B best, F first, W worst
-    int size; //tamanio en bytes
+    long long size; //tamanio en bytes
     std::string nombre; //nombre de la particion (unico en el disco)
     int padre; //solo para logicas: posicion en el vector del
     //disco donde esta la particion extendida que la contiene
@@ -24,7 +24,7 @@ struct particion {
 
 // disco simulado (se crea con mkdisk)
 struct disco {
-    int size; // tamanio en bytes
+    long long size; // tamanio en bytes
     char fit; // fit por defecto del disco
     std::string path; // ruta del disco
     std::string letra; // letra para el id del mount

@@ -1,0 +1,206 @@
+/* tema oscuro estilo terminal de linux */
+
+:root {
+  --fondo: #101418;
+  --fondo-panel: #161d22;
+  --fondo-campo: #0c0f13;
+  --borde: #2b343a;
+  --texto: #d6dde3;
+  --texto-suave: #6b7a86;
+  --verde: #46e075;
+  --rojo: #ff5f56;
+  --cian: #56c8f0;
+  --amarillo: #e6c251;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--mono);
+}
+
+/* area principal en forma de columna: barra, entrada y salida */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 10px;
+  gap: 10px;
+}
+
+/* ------------------------------------------------------------------ */
+/* BARRA SUPERIOR                                                       */
+/* ------------------------------------------------------------------ */
+.barra-superior {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--fondo-panel);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+}
+
+.titulo {
+  font-weight: bold;
+  color: var(--verde);
+  letter-spacing: 1px;
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  background: #232d33;
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  padding: 7px 14px;
+  font-family: var(--mono);
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #2d3940;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* el boton principal se ve mas verde */
+.btn-ejecutar {
+  background: #1d4a2c;
+  border-color: #2e6b3f;
+  color: #7cf6a2;
+}
+
+.btn-ejecutar:hover {
+  background: #245a36;
+}
+
+/* ------------------------------------------------------------------ */
+/* AREA DE ENTRADA                                                      */
+/* ------------------------------------------------------------------ */
+.area-entrada {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 40%;
+  min-height: 120px;
+}
+
+.etiqueta {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin-bottom: 4px;
+}
+
+.area-entrada textarea {
+  flex: 1;
+  resize: none;
+  background: var(--fondo-campo);
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 10px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.5;
+  outline: none;
+}
+
+.area-entrada textarea:focus {
+  border-color: var(--cian);
+}
+
+.area-entrada textarea::placeholder {
+  color: var(--texto-suave);
+}
+
+/* ------------------------------------------------------------------ */
+/* PANEL DE SALIDA                                                      */
+/* ------------------------------------------------------------------ */
+.panel-salida {
+  display: flex;
+  flex: 1 1 60%;
+  gap: 10px;
+  min-height: 200px;
+}
+
+.subpanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--fondo-panel);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.panel-titulo {
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--texto-suave);
+  border-bottom: 1px solid var(--borde);
+  background: #1b232a;
+}
+
+/* la consola como tal, con fondo casi negro */
+.consola {
+  flex: 1;
+  overflow: auto;
+  background: #080b0e;
+  padding: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.linea {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.placeholder {
+  color: var(--texto-suave);
+}
+
+/* colores semanticos de cada linea */
+.texto-ok {
+  color: var(--verde);
+}
+
+.texto-comentario {
+  color: var(--texto-suave);
+  font-style: italic;
+}
+
+.texto-error {
+  color: var(--rojo);
+}
+
+.texto-prompt {
+  color: var(--cian);
+}
+
+.texto-comando {
+  color: var(--amarillo);
+}
+
+.texto-normal {
+  color: var(--texto);
+}

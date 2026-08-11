@@ -32,9 +32,9 @@ void analizarRmdisk(std::vector<parametro> &params) {
         return;
     }
 
-    // el disco debe existir en memoria para poder eliminarlo
+    // si el disco no existe igual se da por eliminado
     if (buscarDisco(estado.discos, path) == nullptr) {
-        std::cout << "[ERROR] no existe un disco en la ruta: " << path << std::endl;
+        std::cout << "[OK] no habia un disco que eliminar en: " << path << std::endl;
         return;
     }
 

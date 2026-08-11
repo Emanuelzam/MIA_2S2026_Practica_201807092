@@ -73,12 +73,13 @@ void analizarMkdisk(std::vector<parametro> &params) {
         return;
     }
 
-    // convierto el tamano a bytes segun la unidad
-    int sizeBytes = size;
+    //convierte el tamano a bytes segun la unidad
+    //se usa long long porque 3000 m son mas de 3000 millones
+    long long sizeBytes = size;
     if (unit == "k") {
-        sizeBytes = size * 1024;
+        sizeBytes = size * 1024LL;
     } else {
-        sizeBytes = size * 1024 * 1024;
+        sizeBytes = size * 1024LL * 1024LL;
     }
 
     // guardo el disco en el estado global
